@@ -20,7 +20,7 @@
     "require": {
         "php": ">=5.3.3",
         "symfony/security": "~2.3",
-        "ajgl/session-expiration": "dev-master"
+        "ajgl/session-expiration": ">=0.1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.2"
