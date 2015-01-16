@@ -43,7 +43,7 @@ Badges
 * **Poser License** [![License](https://poser.pugx.org/ajgl/session-concurrency/license.png)](https://packagist.org/packages/ajgl/session-concurrency)
 * **Scrutinizer Quality** [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ajgarlag/AjglSessionConcurrency/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ajgarlag/AjglSessionConcurrency/?branch=master)
 * **Scrutinizer Code Coverage** [![Code Coverage](https://scrutinizer-ci.com/g/ajgarlag/AjglSessionConcurrency/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ajgarlag/AjglSessionConcurrency/?branch=master)
-* **SensionLabs Insight Quality** [![SensioLabsInsight](https://insight.sensiolabs.com/projects/684809e2-f473-4663-b340-69af09d07088/mini.png)](https://insight.sensiolabs.com/projects/684809e2-f473-4663-b340-69af09d07088)
+* **SensioLabs Insight Quality** [![SensioLabsInsight](https://insight.sensiolabs.com/projects/684809e2-f473-4663-b340-69af09d07088/mini.png)](https://insight.sensiolabs.com/projects/684809e2-f473-4663-b340-69af09d07088)
 * **VersionEye Dependency Status** [![Dependency Status](https://www.versioneye.com/php/ajgl:session-concurrency/dev-master/badge.png)](https://www.versioneye.com/php/ajgl:session-concurrency/dev-master)
 
 
