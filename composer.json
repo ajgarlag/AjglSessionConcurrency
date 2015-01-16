@@ -1,0 +1,33 @@
+{
+    "name": "ajgl/session-concurrency",
+    "description": "Symfony session authentication strategy to control concurrency",
+    "keywords": ["symfony", "session", "security", "concurrency"],
+    "homepage": "https://github.com/ajgarlag/AjglSessionConcurrency",
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Antonio J. García Lagar",
+        "email": "aj@garcialagar.es",
+        "homepage": "http://aj.garcialagar.es",
+        "role": "developer"
+      }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ajgl\\Security\\": ""
+        }
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/security": "~2.3",
+        "ajgl/session-expiration": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.2"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        }
+    }
+}
