@@ -5,12 +5,12 @@
     "homepage": "https://github.com/ajgarlag/AjglSessionConcurrency",
     "license": "MIT",
     "authors": [
-      {
-        "name": "Antonio J. García Lagar",
-        "email": "aj@garcialagar.es",
-        "homepage": "http://aj.garcialagar.es",
-        "role": "developer"
-      }
+        {
+            "name": "Antonio J. García Lagar",
+            "email": "aj@garcialagar.es",
+            "homepage": "http://aj.garcialagar.es",
+            "role": "developer"
+        }
     ],
     "autoload": {
         "psr-4": {
