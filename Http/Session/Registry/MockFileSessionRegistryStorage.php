@@ -79,8 +79,10 @@ class MockFileSessionRegistryStorage implements SessionRegistryStorageInterface
      */
     public function removeSessionInformation($sessionId)
     {
-        if (isset($this->sessionInformations[$sessionId])) {
-            unset($this->sessionInformations[$sessionId]);
+        $filename = $this->getFilePath($sessionId);
+
+        if (file_exists($filename)) {
+            unlink($filename);
         }
     }
 
