@@ -16,13 +16,23 @@ All your feedback and contributions to this repository will help me to improve t
 Usage
 -----
 
-TBD.
+You have to override the default session authentication strategy with a composite
+strategy chains:
+
+1. The concurrency control strategy
+2. The default strategy
+3. The register strategy
+
+If you want to expire old sessions when the maximun number of allowed sessions
+is reached, you have to subscribe the `SessionRegistryExpirationListener` to the
+`kernel.response` event of your application HTTP kernel.
 
 
 Symfony Bundle
 --------------
 
-TBD.
+If you need to integrate this library into your Symfony Framework app, you
+can install the [AjglSessionConcurrencyBundle](https://github.com/ajgarlag/AjglSessionConcurrencyBundle)
 
 
 License
@@ -50,7 +60,7 @@ Badges
 About
 -----
 
-AjglSessionExpiration is an [ajgarlag](http://aj.garcialagar.es) initiative.
+AjglSessionConcurrency is an [ajgarlag](http://aj.garcialagar.es) initiative.
 
 
 Reporting an issue or a feature request
