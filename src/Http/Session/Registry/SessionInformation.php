@@ -102,7 +102,7 @@ class SessionInformation
      */
     public function refreshLastUsed($lastUsed = null)
     {
-        $this->setLastUsed($lastUsed?:time());
+        $this->setLastUsed($lastUsed ?: time());
     }
 
     private function getExpired()
@@ -110,12 +110,12 @@ class SessionInformation
         return $this->expired;
     }
 
-    private function setExpired( $expired)
+    private function setExpired($expired)
     {
         $this->expired = (int) $expired;
     }
 
-    private function setLastUsed( $lastUsed)
+    private function setLastUsed($lastUsed)
     {
         $this->lastUsed = (int) $lastUsed;
     }

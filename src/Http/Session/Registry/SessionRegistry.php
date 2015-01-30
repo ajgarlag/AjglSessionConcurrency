@@ -55,7 +55,7 @@ class SessionRegistry
      * Updates the given sessionId so its last request time is equal to the present date and time.
      *
      * @param string   $sessionId the session identifier key.
-     * @param int|null $lastUsed the last request timestamp
+     * @param int|null $lastUsed  the last request timestamp
      */
     public function refreshLastUsed($sessionId, $lastUsed = null)
     {
@@ -83,13 +83,13 @@ class SessionRegistry
     /**
      * Registers a new session for the given user.
      *
-     * @param string $sessionId   the session identifier key.
-     * @param string $username    the given user.
+     * @param string $sessionId the session identifier key.
+     * @param string $username  the given user.
      * @param int    $lastUsed
      */
     public function registerNewSession($sessionId, $username, $lastUsed = null)
     {
-        $sessionInformation = new SessionInformation($sessionId, $username, $lastUsed?:time());
+        $sessionInformation = new SessionInformation($sessionId, $username, $lastUsed ?: time());
 
         $this->saveSessionInformation($sessionInformation);
     }
@@ -104,15 +104,15 @@ class SessionRegistry
         $this->sessionRegistryStorage->removeSessionInformation($sessionId);
     }
 
-     /**
-      * Removes sessions information which last used timestamp is older
-      * than the given lifetime
-      *
-      * @param int $maxLifetime
-      */
+    /**
+     * Removes sessions information which last used timestamp is older
+     * than the given lifetime
+     *
+     * @param int $maxLifetime
+     */
     public function collectGarbage($maxLifetime = null)
     {
-        $maxLifetime = $maxLifetime?:ini_get('session.gc_maxlifetime');
+        $maxLifetime = $maxLifetime ?: ini_get('session.gc_maxlifetime');
         $this->sessionRegistryStorage->collectGarbage($maxLifetime);
     }
 

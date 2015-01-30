@@ -53,11 +53,11 @@ interface SessionRegistryStorageInterface
      */
     public function removeSessionInformation($sessionId);
 
-     /**
-      * Removes sessions information which last used timestamp is older
-      * than the given lifetime
-      *
-      * @param int $maxLifetime
-      */
+    /**
+     * Removes sessions information which last used timestamp is older
+     * than the given lifetime
+     *
+     * @param int $maxLifetime
+     */
     public function collectGarbage($maxLifetime);
 }
