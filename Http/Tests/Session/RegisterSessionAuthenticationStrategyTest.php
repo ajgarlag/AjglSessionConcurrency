@@ -20,8 +20,13 @@ class RegisterSessionAuthenticationStrategyTest extends \PHPUnit_Framework_TestC
 {
     public function testRegisterSession()
     {
+        $metadataBag = $this->getMock('\Symfony\Component\HttpFoundation\Session\Storage\MetadataBag');
+        $metadataBag->expects($this->any())->method('getLastUsed')->willReturn(time());
+
         $session = $this->getMock('Symfony\Component\HttpFoundation\Session\SessionInterface');
         $session->expects($this->any())->method('getId')->will($this->returnValue('bar'));
+        $session->expects($this->any())->method('getMetadataBag')->will($this->returnValue($metadataBag));
+
         $request = $this->getRequest($session);
 
         $registry = $this->getSessionRegistry();
