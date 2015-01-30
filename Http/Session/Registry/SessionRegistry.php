@@ -104,6 +104,18 @@ class SessionRegistry
         $this->sessionRegistryStorage->removeSessionInformation($sessionId);
     }
 
+     /**
+      * Removes sessions information which last used timestamp is older
+      * than the given lifetime
+      *
+      * @param int $maxLifetime
+      */
+    public function collectGarbage($maxLifetime = null)
+    {
+        $maxLifetime = $maxLifetime?:ini_get('session.gc_maxlifetime');
+        $this->sessionRegistryStorage->collectGarbage($maxLifetime);
+    }
+
     private function saveSessionInformation(SessionInformation $sessionInformation)
     {
         $this->sessionRegistryStorage->saveSessionInformation($sessionInformation);

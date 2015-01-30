@@ -86,6 +86,20 @@ class MockFileSessionRegistryStorage implements SessionRegistryStorageInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function collectGarbage($maxLifetime)
+    {
+        $now = time();
+        foreach (glob($this->getFilePath('*')) as $filename) {
+            $sessionInfo = $this->fileToSessionInfo($filename);
+            if ($now - $sessionInfo->getLastUsed() > $maxLifetime) {
+                $this->removeSessionInformation($sessionInfo->getSessionId());
+            }
+        }
+    }
+
     private function getFilePath($sessionId)
     {
         return $this->savePath.'/'.$sessionId.'.mocksessinfo';
