@@ -83,9 +83,9 @@ class SessionRegistry
     /**
      * Registers a new session for the given user.
      *
-     * @param string    $sessionId   the session identifier key.
-     * @param string    $username    the given user.
-     * @param \DateTime $lastUsed
+     * @param string $sessionId   the session identifier key.
+     * @param string $username    the given user.
+     * @param int    $lastUsed
      */
     public function registerNewSession($sessionId, $username, $lastUsed = null)
     {
