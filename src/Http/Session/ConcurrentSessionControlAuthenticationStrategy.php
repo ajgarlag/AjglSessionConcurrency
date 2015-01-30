@@ -35,6 +35,11 @@ class ConcurrentSessionControlAuthenticationStrategy implements SessionAuthentic
     protected $errorIfMaximumExceeded;
     protected $maximumSessions;
 
+    /**
+     * @param SessionRegistry $registry
+     * @param int             $maximumSessions
+     * @param bool            $errorIfMaximumExceeded
+     */
     public function __construct(SessionRegistry $registry, $maximumSessions, $errorIfMaximumExceeded = true)
     {
         $this->registry = $registry;
@@ -92,10 +97,9 @@ class ConcurrentSessionControlAuthenticationStrategy implements SessionAuthentic
     /**
      * Allows subclasses to customize behavior when too many sessions are detected.
      *
-     * @param array           $orderedSessions   Array of SessionInformation ordered from
-     *                                           newest to oldest
-     * @param int             $allowableSessions
-     * @param SessionRegistry $registry
+     * @param Registry\SessionInformation[] $orderedSessions   Array of SessionInformation ordered from newest to oldest
+     * @param int                           $allowableSessions
+     * @param SessionRegistry               $registry
      */
     protected function allowedSessionsExceeded($orderedSessions, $allowableSessions, SessionRegistry $registry)
     {

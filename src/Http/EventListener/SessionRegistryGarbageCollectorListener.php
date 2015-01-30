@@ -28,6 +28,12 @@ class SessionRegistryGarbageCollectorListener implements EventSubscriberInterfac
     private $probability;
     private $divisor;
 
+    /**
+     * @param SessionRegistry $registry
+     * @param int             $maxLifetime
+     * @param int             $probability
+     * @param int             $divisor
+     */
     public function __construct(SessionRegistry $registry, $maxLifetime = null, $probability = null, $divisor = null)
     {
         $this->registry = $registry;
