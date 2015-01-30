@@ -41,7 +41,7 @@ class SessionRegistry
     }
 
     /**
-     * Obtains the session information for the given sessionId.
+     * Returns the session information for the given sessionId.
      *
      * @param  string                  $sessionId the session identifier key.
      * @return SessionInformation|null $sessionInformation
@@ -52,25 +52,18 @@ class SessionRegistry
     }
 
     /**
-     * Sets a SessionInformation object.
-     *
-     * @param SessionInformation $sessionInformation
-     */
-    private function saveSessionInformation(SessionInformation $sessionInformation)
-    {
-        $this->sessionRegistryStorage->saveSessionInformation($sessionInformation);
-    }
-
-    /**
      * Updates the given sessionId so its last request time is equal to the present date and time.
      *
-     * @param string $sessionId the session identifier key.
+     * @param string   $sessionId the session identifier key.
+     * @param int|null $lastUsed the last request timestamp
      */
-    public function refreshLastRequest($sessionId)
+    public function refreshLastUsed($sessionId, $lastUsed = null)
     {
         if ($sessionInformation = $this->getSessionInformation($sessionId)) {
-            $sessionInformation->refreshLastRequest();
-            $this->saveSessionInformation($sessionInformation);
+            if ($sessionInformation->getLastUsed() != $lastUsed) {
+                $sessionInformation->refreshLastUsed($lastUsed);
+                $this->saveSessionInformation($sessionInformation);
+            }
         }
     }
 
@@ -92,12 +85,11 @@ class SessionRegistry
      *
      * @param string    $sessionId   the session identifier key.
      * @param string    $username    the given user.
-     * @param \DateTime $lastRequest
+     * @param \DateTime $lastUsed
      */
-    public function registerNewSession($sessionId, $username, \DateTime $lastRequest = null)
+    public function registerNewSession($sessionId, $username, $lastUsed = null)
     {
-        $lastRequest = $lastRequest ?: new \DateTime();
-        $sessionInformation = new SessionInformation($sessionId, $username, $lastRequest);
+        $sessionInformation = new SessionInformation($sessionId, $username, $lastUsed?:time());
 
         $this->saveSessionInformation($sessionInformation);
     }
@@ -110,5 +102,10 @@ class SessionRegistry
     public function removeSessionInformation($sessionId)
     {
         $this->sessionRegistryStorage->removeSessionInformation($sessionId);
+    }
+
+    private function saveSessionInformation(SessionInformation $sessionInformation)
+    {
+        $this->sessionRegistryStorage->saveSessionInformation($sessionInformation);
     }
 }

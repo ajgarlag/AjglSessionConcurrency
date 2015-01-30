@@ -34,15 +34,16 @@ class SessionRegistryTest extends \PHPUnit_Framework_TestCase
         $registry->getSessionInformation('foobar');
     }
 
-    public function testRefreshLastRequest()
+    public function testRefreshLastUsed()
     {
         $sessionInformation = $this->getSessionInformation();
-        $sessionInformation->expects($this->once())->method('refreshLastRequest');
+        $sessionInformation->expects($this->any())->method('getLastUsed')->willReturn(time()-1);
+        $sessionInformation->expects($this->once())->method('refreshLastUsed');
         $storage = $this->getSessionRegistryStorage();
         $storage->expects($this->any())->method('getSessionInformation')->with('foobar')->will($this->returnValue($sessionInformation));
         $storage->expects($this->once())->method('saveSessionInformation')->with($sessionInformation);
         $registry = $this->getSessionRegistry($storage);
-        $registry->refreshLastRequest('foobar');
+        $registry->refreshLastUsed('foobar');
     }
 
     public function testExpireNow()
@@ -61,7 +62,7 @@ class SessionRegistryTest extends \PHPUnit_Framework_TestCase
         $storage = $this->getSessionRegistryStorage();
         $storage->expects($this->once())->method('saveSessionInformation')->with($this->isInstanceOf('Ajgl\Security\Http\Session\Registry\SessionInformation'));
         $registry = $this->getSessionRegistry($storage);
-        $registry->registerNewSession('foo', 'bar', new \DateTime());
+        $registry->registerNewSession('foo', 'bar', time());
     }
 
     public function testRemoveSessionInformation()

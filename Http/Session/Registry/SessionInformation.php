@@ -17,19 +17,28 @@ namespace Ajgl\Security\Http\Session\Registry;
  * Represents a record of a session. This is primarily used for concurrent session support.
  *
  * @author Stefan Paschke <stefan.paschke@gmail.com>
+ * @author Antonio J. García Lagar <aj@garcialagar.es>
  */
 class SessionInformation
 {
     private $sessionId;
     private $username;
     private $expired;
-    private $lastRequest;
+    private $lastUsed;
 
-    public function __construct($sessionId, $username, \DateTime $lastRequest, \DateTime $expired = null)
+    /**
+     * Class constructor
+     *
+     * @param string   $sessionId
+     * @param string   $username
+     * @param int      $lastUsed
+     * @param int|null $expired
+     */
+    public function __construct($sessionId, $username, $lastUsed, $expired = null)
     {
         $this->setSessionId($sessionId);
         $this->setUsername($username);
-        $this->setLastRequest($lastRequest);
+        $this->setLastUsed($lastUsed);
 
         if (null !== $expired) {
             $this->setExpired($expired);
@@ -37,26 +46,25 @@ class SessionInformation
     }
 
     /**
-     * Sets the session informations expiration date to the current date and time.
-     *
+     * Marks the session as expired.
      */
     public function expireNow()
     {
-        $this->setExpired(new \DateTime());
+        $this->setExpired(time());
     }
 
     /**
-     * Obtain the last request date.
+     * Returns the last request timestamp.
      *
-     * @return DateTime the last request date and time.
+     * @return int the last request timestamp.
      */
-    public function getLastRequest()
+    public function getLastUsed()
     {
-        return $this->lastRequest;
+        return $this->lastUsed;
     }
 
     /**
-     * Gets the username.
+     * Returns the username.
      *
      * @return string
      */
@@ -66,9 +74,9 @@ class SessionInformation
     }
 
     /**
-     * Gets the session identifier key.
+     * Returns the session identifier key.
      *
-     * @return string $sessionId the session identifier key.
+     * @return string the session identifier key.
      */
     public function getSessionId()
     {
@@ -76,22 +84,25 @@ class SessionInformation
     }
 
     /**
-     * Return whether this session is expired.
+     * Returns whether this session is expired or not.
      *
      * @return bool
      */
     public function isExpired()
     {
-        return null !== $this->getExpired() && $this->getExpired()->getTimestamp() < microtime(true);
+        return null !== $this->getExpired() && $this->getExpired() < microtime(true);
     }
 
     /**
-     * Set the last request date to the current date and time.
+     * Set the last request date timestamp.
      *
+     * It will set the current timestamp if no one is given
+     *
+     * @param int|null $lastUsed
      */
-    public function refreshLastRequest()
+    public function refreshLastUsed($lastUsed = null)
     {
-        $this->lastRequest = new \DateTime();
+        $this->setLastUsed($lastUsed?:time());
     }
 
     private function getExpired()
@@ -99,14 +110,14 @@ class SessionInformation
         return $this->expired;
     }
 
-    private function setExpired(\DateTime $expired)
+    private function setExpired( $expired)
     {
-        $this->expired = $expired;
+        $this->expired = (int) $expired;
     }
 
-    private function setLastRequest(\DateTime $lastRequest)
+    private function setLastUsed( $lastUsed)
     {
-        $this->lastRequest = $lastRequest;
+        $this->lastUsed = (int) $lastUsed;
     }
 
     private function setSessionId($sessionId)

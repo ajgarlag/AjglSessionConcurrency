@@ -27,13 +27,12 @@ class SessionInformationTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($sessionInfo->isExpired());
     }
 
-    public function testRefreshLastRequest()
+    public function testRefreshLastUsed()
     {
         $sessionInfo = $this->getSessionInformation();
-        $lastRequest = $sessionInfo->getLastRequest();
-        $this->assertInstanceOf('DateTime', $lastRequest);
-        $sessionInfo->refreshLastRequest();
-        $this->assertGreaterThanOrEqual($lastRequest, $sessionInfo->getLastRequest());
+        $lastUsed = $sessionInfo->getLastUsed();
+        $sessionInfo->refreshLastUsed();
+        $this->assertGreaterThanOrEqual($lastUsed, $sessionInfo->getLastUsed());
     }
 
     public function testGetSessionId()
@@ -53,6 +52,6 @@ class SessionInformationTest extends \PHPUnit_Framework_TestCase
      */
     private function getSessionInformation()
     {
-        return new SessionInformation('foo', 'bar', new \DateTime());
+        return new SessionInformation('foo', 'bar', time());
     }
 }
