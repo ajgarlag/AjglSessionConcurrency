@@ -65,6 +65,8 @@ class MockFileSessionRegistryStorage implements SessionRegistryStorageInterface
             }
         }
 
+        usort($result, function($a, $b){return $a->getLastUsed()==$b->getLastUsed()?0:$a->getLastUsed()>$b->getLastUsed()?-1:1;});
+
         return $result;
     }
 
