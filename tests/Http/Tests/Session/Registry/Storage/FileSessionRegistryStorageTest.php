@@ -11,19 +11,19 @@
 
 namespace Ajgl\Security\Http\Tests\Session\Registry\Storage;
 
-use Ajgl\Security\Http\Session\Registry\Storage\MockFileSessionRegistryStorage;
+use Ajgl\Security\Http\Session\Registry\Storage\FileSessionRegistryStorage;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @author Antonio J. García Lagar <aj@garcialagar.es>
  */
-class MockFileSessionRegistryStorageTest extends AbstractSessionRegistryStorageTest
+class FileSessionRegistryStorageTest extends AbstractSessionRegistryStorageTest
 {
     private $dir;
 
     protected function setUp()
     {
-        $this->dir = sys_get_temp_dir().'/'.uniqid('mock_storage_');
+        $this->dir = sys_get_temp_dir().'/'.uniqid('file_storage_');
         $this->cleanDir($this->dir);
         mkdir($this->dir);
 
@@ -47,6 +47,6 @@ class MockFileSessionRegistryStorageTest extends AbstractSessionRegistryStorageT
 
     protected function buildSessionRegistryStorage()
     {
-        return new MockFileSessionRegistryStorage($this->dir);
+        return new FileSessionRegistryStorage($this->dir);
     }
 }
