@@ -47,6 +47,19 @@ class SessionInformationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $sessionInfo->getUsername());
     }
 
+    public function testGetExpiredReturnsNullIfNotSet()
+    {
+        $sessionInfo = $this->getSessionInformation();
+        $this->assertNull($sessionInfo->getExpired());
+    }
+
+    public function testGetExpiredReturnsIntegerIfExpired()
+    {
+        $sessionInfo = $this->getSessionInformation();
+        $sessionInfo->expireNow();
+        $this->assertInternalType('int', $sessionInfo->getExpired());
+    }
+
     /**
      * @return SessionInformation
      */
