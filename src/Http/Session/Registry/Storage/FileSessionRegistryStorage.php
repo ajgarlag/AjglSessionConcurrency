@@ -27,12 +27,16 @@ class FileSessionRegistryStorage implements SessionRegistryStorageInterface
      */
     public function __construct($savePath = null)
     {
+        if (!file_exists($savePath) && false === mkdir($savePath)) {
+            throw new \RuntimeException('Cannot create the given directory.');
+        }
+
         if (!is_dir($savePath)) {
-            throw new \InvalidArgumentException('The given path must be an existing directory.');
+            throw new \InvalidArgumentException('The given path must be a directory.');
         }
 
         if (!is_writable($savePath)) {
-            throw new \InvalidArgumentException('The given path must be a writable directory.');
+            throw new \InvalidArgumentException('The given path must be writable.');
         }
 
         $this->savePath = $savePath;

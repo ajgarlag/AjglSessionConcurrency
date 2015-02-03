@@ -25,7 +25,6 @@ class FileSessionRegistryStorageTest extends AbstractSessionRegistryStorageTest
     {
         $this->dir = sys_get_temp_dir().'/'.uniqid('file_storage_');
         $this->cleanDir($this->dir);
-        mkdir($this->dir);
 
         parent::setUp();
     }
