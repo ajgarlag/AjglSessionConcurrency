@@ -19,7 +19,6 @@ use Ajgl\Security\Http\Session\Registry\Storage\SessionRegistryStorageInterface;
  */
 abstract class AbstractSessionRegistryStorageTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var SessionRegistryStorageInterface
      */
