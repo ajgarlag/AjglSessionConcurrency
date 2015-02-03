@@ -21,37 +21,66 @@ use Ajgl\Security\Http\Session\Registry\SessionInformation;
 class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
 {
     /**
-     * @var \PDO PDO instance
+     * @var \PDO|null PDO instance or null when not connected yet
      */
     private $pdo;
 
     /**
+     * @var string|null|false DSN string or null for session.save_path or false when lazy connection disabled
+     */
+    private $dsn = false;
+
+    /**
+     * @var string Database driver
+     */
+    private $driver;
+
+    /**
      * @var string Table name
      */
-    private $table;
+    private $table = 'sessions_registry';
 
     /**
      * @var string Column for session id
      */
-    private $idCol;
+    private $idCol = 'sess_id';
 
     /**
      * @var string Column for session username
      */
-    private $usernameCol;
+    private $usernameCol = 'sess_username';
 
     /**
      * @var string Column for last used timestamp
      */
-    private $lastUsedCol;
+    private $lastUsedCol = 'sess_last_used';
 
     /**
      * @var string Column for expired timestamp
      */
-    private $expiredCol;
+    private $expiredCol = 'sess_expired';
+
+    /**
+     * @var string Username when lazy-connect
+     */
+    private $username = '';
+
+    /**
+     * @var string Password when lazy-connect
+     */
+    private $password = '';
+
+    /**
+     * @var array Connection options when lazy-connect
+     */
+    private $connectionOptions = array();
 
     /**
      * Constructor.
+     *
+     * You can either pass an existing database connection as PDO instance or
+     * pass a DSN string that will be used to lazy-connect to the database
+     * when the session is actually used.
      *
      * List of available options:
      *  * db_table: The name of the table [default: sessions_registry]
@@ -59,31 +88,36 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
      *  * db_username_col: The column where to store the session username [default: sess_username]
      *  * db_last_used_col: The column where to store the last used timestamp [default: sess_last_used]
      *  * db_expired_col: The column where to store the expired timestamp [default: sess_expired]
+     *  * db_username: The username when lazy-connect [default: '']
+     *  * db_password: The password when lazy-connect [default: '']
+     *  * db_connection_options: An array of driver-specific connection options [default: array()]
      *
-     * @param \PDO  $pdo       A \PDO instance
-     * @param array $dbOptions An associative array of DB options
+     * @param \PDO|string $pdoOrDsn A \PDO instance or DSN string
+     * @param array       $options  An associative array of options
      *
-     * @throws \InvalidArgumentException When "db_table" option is not provided
+     * @throws \InvalidArgumentException When PDO error mode is not PDO::ERRMODE_EXCEPTION
      */
-    public function __construct(\PDO $pdo, array $dbOptions = array())
+    public function __construct($pdoOrDsn, array $options = array())
     {
-        if (\PDO::ERRMODE_EXCEPTION !== $pdo->getAttribute(\PDO::ATTR_ERRMODE)) {
-            throw new \InvalidArgumentException(sprintf('"%s" requires PDO error mode attribute be set to throw Exceptions (i.e. $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION))', __CLASS__));
-        }
-        $this->pdo = $pdo;
-        $dbOptions = array_merge(array(
-            'db_table' => 'sessions_registry',
-            'db_id_col' => 'sess_id',
-            'db_username_col' => 'sess_username',
-            'db_last_used_col' => 'sess_last_used',
-            'db_expired_col' => 'sess_expired',
-        ), $dbOptions);
+        if ($pdoOrDsn instanceof \PDO) {
+            if (\PDO::ERRMODE_EXCEPTION !== $pdoOrDsn->getAttribute(\PDO::ATTR_ERRMODE)) {
+                throw new \InvalidArgumentException(sprintf('"%s" requires PDO error mode attribute be set to throw Exceptions (i.e. $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION))', __CLASS__));
+            }
 
-        $this->table = $dbOptions['db_table'];
-        $this->idCol = $dbOptions['db_id_col'];
-        $this->usernameCol = $dbOptions['db_username_col'];
-        $this->lastUsedCol = $dbOptions['db_last_used_col'];
-        $this->expiredCol = $dbOptions['db_expired_col'];
+            $this->pdo = $pdoOrDsn;
+            $this->driver = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        } else {
+            $this->dsn = $pdoOrDsn;
+        }
+
+        $this->table = isset($options['db_table']) ? $options['db_table'] : $this->table;
+        $this->idCol = isset($options['db_id_col']) ? $options['db_id_col'] : $this->idCol;
+        $this->usernameCol = isset($options['db_username_col']) ? $options['db_username_col'] : $this->usernameCol;
+        $this->lastUsedCol = isset($options['db_last_used_col']) ? $options['db_last_used_col'] : $this->lastUsedCol;
+        $this->expiredCol = isset($options['db_expired_col']) ? $options['db_expired_col'] : $this->expiredCol;
+        $this->username = isset($options['db_username']) ? $options['db_username'] : $this->username;
+        $this->password = isset($options['db_password']) ? $options['db_password'] : $this->password;
+        $this->connectionOptions = isset($options['db_connection_options']) ? $options['db_connection_options'] : $this->connectionOptions;
     }
 
     /**
@@ -102,7 +136,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
         // connect if we are not yet
         $this->getConnection();
 
-        switch ($this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME)) {
+        switch ($this->driver) {
             case 'mysql':
                 // We use varbinary for the ID column because it prevents unwanted conversions:
                 // - character set conversions between server and client
@@ -128,7 +162,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
         }
 
         try {
-            $this->pdo->exec($sql);
+            $this->getConnection()->exec($sql);
         } catch (\PDOException $e) {
             throw new \RuntimeException(sprintf('PDOException was thrown when trying to create sessions info table: %s', $e->getMessage()), 0, $e);
         }
@@ -143,7 +177,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
         $sql = "DELETE FROM $this->table WHERE $this->lastUsedCol < :time";
 
         try {
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->getConnection()->prepare($sql);
             $stmt->bindValue(':time', time() - $maxLifetime, \PDO::PARAM_INT);
             $stmt->execute();
         } catch (\PDOException $e) {
@@ -159,7 +193,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
         $sql = "SELECT $this->usernameCol, $this->lastUsedCol, $this->expiredCol FROM $this->table WHERE $this->idCol = :id";
 
         try {
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->getConnection()->prepare($sql);
             $stmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
             $stmt->execute();
 
@@ -180,7 +214,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
         $sql = "SELECT $this->idCol, $this->lastUsedCol, $this->expiredCol FROM $this->table WHERE $this->usernameCol = :username $includeExpiredSessionsCondition ORDER BY $this->lastUsedCol DESC";
 
         try {
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->getConnection()->prepare($sql);
             $stmt->bindParam(':username', $username, \PDO::PARAM_STR);
             $stmt->execute();
 
@@ -204,7 +238,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
         $sql = "DELETE FROM $this->table WHERE $this->idCol = :id";
 
         try {
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->getConnection()->prepare($sql);
             $stmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
             $stmt->execute();
         } catch (\PDOException $e) {
@@ -219,7 +253,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
             $mergeSql = $this->getMergeSql();
 
             if (null !== $mergeSql) {
-                $mergeStmt = $this->pdo->prepare($mergeSql);
+                $mergeStmt = $this->getConnection()->prepare($mergeSql);
                 $mergeStmt->bindValue(':id', $sessionInformation->getSessionId(), \PDO::PARAM_STR);
                 $mergeStmt->bindValue(':username', $sessionInformation->getUsername(), \PDO::PARAM_STR);
                 $mergeStmt->bindValue(':last_used', $sessionInformation->getLastUsed(), \PDO::PARAM_INT);
@@ -229,7 +263,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
                 return true;
             }
 
-            $updateStmt = $this->pdo->prepare(
+            $updateStmt = $this->getConnection()->prepare(
                 "UPDATE $this->table SET $this->usernameCol = :username, $this->lastUsedCol = :last_used, $this->expiredCol = :expired WHERE $this->idCol = :id"
             );
             $updateStmt->bindValue(':id', $sessionInformation->getSessionId(), \PDO::PARAM_STR);
@@ -245,7 +279,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
             // longer gap locking.
             if (!$updateStmt->rowCount()) {
                 try {
-                    $insertStmt = $this->pdo->prepare(
+                    $insertStmt = $this->getConnection()->prepare(
                         "INSERT INTO $this->table ($this->idCol, $this->usernameCol, $this->lastUsedCol, $this->expiredCol) VALUES (:id, :username, :last_used, :expired)"
                     );
                     $insertStmt->bindValue(':id', $sessionInformation->getSessionId(), \PDO::PARAM_STR);
@@ -274,9 +308,10 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
      */
     private function getMergeSql()
     {
-        $driver = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        // connect if we are not yet
+        $this->getConnection();
 
-        switch ($driver) {
+        switch ($this->driver) {
             case 'mysql':
                 return "INSERT INTO $this->table ($this->idCol, $this->usernameCol, $this->lastUsedCol, $this->expiredCol) VALUES (:id, :username, :last_used, :expired) ".
                 "ON DUPLICATE KEY UPDATE $this->usernameCol = VALUES($this->usernameCol), $this->lastUsedCol = VALUES($this->lastUsedCol), $this->expiredCol = VALUES($this->expiredCol)";
@@ -285,7 +320,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
                 return "MERGE INTO $this->table USING DUAL ON ($this->idCol = :id) ".
                 "WHEN NOT MATCHED THEN INSERT ($this->idCol, $this->usernameCol, $this->lastUsedCol, $this->expiredCol) VALUES (:id, :username, :last_used, :expired) ".
                 "WHEN MATCHED THEN UPDATE SET $this->usernameCol = :username, $this->lastUsedCol = :last_used, $this->expiredCol = :expired";
-            case 'sqlsrv' === $driver && version_compare($this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION), '10', '>='):
+            case 'sqlsrv' === $this->driver && version_compare($this->getConnection()->getAttribute(\PDO::ATTR_SERVER_VERSION), '10', '>='):
                 // MERGE is only available since SQL Server 2008 and must be terminated by semicolon
                 // It also requires HOLDLOCK according to http://weblogs.sqlteam.com/dang/archive/2009/01/31/UPSERT-Race-Condition-With-MERGE.aspx
                 return "MERGE INTO $this->table WITH (HOLDLOCK) USING (SELECT 1 AS dummy) AS src ON ($this->idCol = :id) ".
@@ -297,12 +332,28 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
     }
 
     /**
+     * Lazy-connects to the database.
+     *
+     * @param string $dsn DSN string
+     */
+    private function connect($dsn)
+    {
+        $this->pdo = new \PDO($dsn, $this->username, $this->password, $this->connectionOptions);
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->driver = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+    }
+
+    /**
      * Return a PDO instance
      *
      * @return \PDO
      */
     protected function getConnection()
     {
+        if (null === $this->pdo) {
+            $this->connect($this->dsn);
+        }
+
         return $this->pdo;
     }
 }

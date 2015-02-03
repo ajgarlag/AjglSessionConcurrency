@@ -18,33 +18,9 @@ use Ajgl\Security\Http\Session\Registry\Storage\PdoSessionRegistryStorage;
  */
 class PdoSessionRegistryStorageTest extends AbstractSessionRegistryStorageTest
 {
-    private $pdo;
-
-    protected function setUp()
-    {
-        $this->pdo = new \PDO('sqlite::memory:');
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        parent::setUp();
-    }
-
-    protected function tearDown()
-    {
-        $this->pdo = null;
-
-        parent::tearDown();
-    }
-
-    protected function cleanDir($dir)
-    {
-        $fs = new Filesystem();
-        if ($fs->exists($dir)) {
-            $fs->remove($dir);
-        }
-    }
-
     protected function buildSessionRegistryStorage()
     {
-        $storage = new PdoSessionRegistryStorage($this->pdo);
+        $storage = new PdoSessionRegistryStorage('sqlite::memory:');
         $storage->createTable();
 
         return $storage;
