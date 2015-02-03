@@ -87,7 +87,7 @@ class ConcurrentSessionControlAuthenticationStrategy implements SessionAuthentic
     /**
      * Sets the maxSessions property.
      *
-     * @param $maximumSessions
+     * @param int $maximumSessions
      */
     public function setMaximumSessions($maximumSessions)
     {
