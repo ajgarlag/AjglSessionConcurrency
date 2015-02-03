@@ -105,7 +105,12 @@ class SessionInformation
         $this->setLastUsed($lastUsed ?: time());
     }
 
-    private function getExpired()
+    /**
+     * Returns the session expiration timestamp.
+     *
+     * @return int
+     */
+    public function getExpired()
     {
         return $this->expired;
     }

@@ -9,7 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Ajgl\Security\Http\Session\Registry;
+namespace Ajgl\Security\Http\Session\Registry\Storage;
+
+use Ajgl\Security\Http\Session\Registry\SessionInformation;
 
 /**
  * SessionRegistryStorageInterface.

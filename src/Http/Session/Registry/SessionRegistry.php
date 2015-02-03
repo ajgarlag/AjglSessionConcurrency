@@ -11,6 +11,8 @@
 
 namespace Ajgl\Security\Http\Session\Registry;
 
+use Ajgl\Security\Http\Session\Registry\Storage\SessionRegistryStorageInterface;
+
 /**
  * SessionRegistry.
  *

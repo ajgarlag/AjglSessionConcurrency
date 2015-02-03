@@ -83,7 +83,7 @@ class SessionRegistryTest extends \PHPUnit_Framework_TestCase
 
     private function getSessionRegistryStorage()
     {
-        return $this->getMock('Ajgl\Security\Http\Session\Registry\SessionRegistryStorageInterface');
+        return $this->getMock('Ajgl\Security\Http\Session\Registry\Storage\SessionRegistryStorageInterface');
     }
 
     private function getSessionInformation()
