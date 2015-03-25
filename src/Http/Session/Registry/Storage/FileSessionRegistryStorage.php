@@ -14,7 +14,7 @@ namespace Ajgl\Security\Http\Session\Registry\Storage;
 use Ajgl\Security\Http\Session\Registry\SessionInformation;
 
 /**
- * Session registry to filesystem storage
+ * Session registry to filesystem storage.
  *
  * @author Antonio J. García Lagar <aj@garcialagar.es>
  */
@@ -69,7 +69,7 @@ class FileSessionRegistryStorage implements SessionRegistryStorageInterface
         usort(
             $result,
             function (SessionInformation $a, SessionInformation $b) {
-                return $a->getLastUsed() == $b->getLastUsed() ? 0 : $a->getLastUsed()>$b->getLastUsed() ? -1 : 1;
+                return $a->getLastUsed() === $b->getLastUsed() ? 0 : $a->getLastUsed()>$b->getLastUsed() ? -1 : 1;
             }
         );
 
@@ -131,7 +131,7 @@ class FileSessionRegistryStorage implements SessionRegistryStorageInterface
             throw new \UnexpectedValueException(sprintf("'%s' files found for session ID '%s'.", count($filenames), $sessionId));
         }
 
-        return count($filenames) == 0 ? null : reset($filenames);
+        return count($filenames) === 0 ? null : reset($filenames);
     }
 
     private function getFilePath(SessionInformation $sessionInformation)

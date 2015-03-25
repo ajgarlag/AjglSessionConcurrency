@@ -12,8 +12,8 @@
 namespace Ajgl\Security\Http\Logout;
 
 use Ajgl\Security\Http\Session\Registry\SessionRegistry;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Logout\SessionLogoutHandler as BaseHandler;
 

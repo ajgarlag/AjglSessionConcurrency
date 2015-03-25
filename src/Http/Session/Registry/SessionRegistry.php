@@ -33,8 +33,9 @@ class SessionRegistry
     /**
      * Returns all the sessions stored for the given user ordered from newest to oldest.
      *
-     * @param  string               $username               the given user.
-     * @param  bool                 $includeExpiredSessions
+     * @param string $username               the given user.
+     * @param bool   $includeExpiredSessions
+     *
      * @return SessionInformation[] An array of SessionInformation objects.
      */
     public function getAllSessions($username, $includeExpiredSessions = false)
@@ -45,7 +46,8 @@ class SessionRegistry
     /**
      * Returns the session information for the given sessionId.
      *
-     * @param  string                  $sessionId the session identifier key.
+     * @param string $sessionId the session identifier key.
+     *
      * @return SessionInformation|null $sessionInformation
      */
     public function getSessionInformation($sessionId)
@@ -62,7 +64,7 @@ class SessionRegistry
     public function refreshLastUsed($sessionId, $lastUsed = null)
     {
         if ($sessionInformation = $this->getSessionInformation($sessionId)) {
-            if ($sessionInformation->getLastUsed() != $lastUsed) {
+            if ($sessionInformation->getLastUsed() !== $lastUsed) {
                 $sessionInformation->refreshLastUsed($lastUsed);
                 $this->saveSessionInformation($sessionInformation);
             }
@@ -108,7 +110,7 @@ class SessionRegistry
 
     /**
      * Removes sessions information which last used timestamp is older
-     * than the given lifetime
+     * than the given lifetime.
      *
      * @param int $maxLifetime
      */

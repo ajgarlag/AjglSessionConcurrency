@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * RefreshSessionRegistryMetadataListener refresh session last used timestamp
+ * RefreshSessionRegistryMetadataListener refresh session last used timestamp.
  *
  * @author Antonio J. García Lagar <aj@garcialagar.es>
  */
@@ -34,7 +34,7 @@ class RefreshSessionRegistryLastUsedListener implements EventSubscriberInterface
     }
 
     /**
-     * Refresh the last used timestamp for the given session if registered
+     * Refresh the last used timestamp for the given session if registered.
      *
      * @param PostResponseEvent $event
      */

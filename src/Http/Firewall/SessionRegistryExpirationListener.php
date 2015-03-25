@@ -18,7 +18,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 
 /**
- * SessionExpirationListener controls idle and expired sessions
+ * SessionExpirationListener controls idle and expired sessions.
  *
  * @author Antonio J. García Lagar <aj@garcialagar.es>
  */

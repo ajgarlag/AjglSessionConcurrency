@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Clear session information from registry for idle sessions
+ * Clear session information from registry for idle sessions.
  *
  * @author Antonio J. García Lagar <aj@garcialagar.es>
  */

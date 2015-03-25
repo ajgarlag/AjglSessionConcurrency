@@ -14,7 +14,7 @@ namespace Ajgl\Security\Http\Session\Registry\Storage;
 use Ajgl\Security\Http\Session\Registry\SessionInformation;
 
 /**
- * Stores session registry information to a DB using PDO
+ * Stores session registry information to a DB using PDO.
  *
  * @author Antonio J. García Lagar <aj@garcialagar.es>
  */
@@ -344,7 +344,7 @@ class PdoSessionRegistryStorage implements SessionRegistryStorageInterface
     }
 
     /**
-     * Return a PDO instance
+     * Return a PDO instance.
      *
      * @return \PDO
      */

@@ -27,7 +27,7 @@ class SessionInformation
     private $lastUsed;
 
     /**
-     * Class constructor
+     * Class constructor.
      *
      * @param string   $sessionId
      * @param string   $username

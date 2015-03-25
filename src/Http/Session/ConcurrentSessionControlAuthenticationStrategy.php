@@ -62,10 +62,10 @@ class ConcurrentSessionControlAuthenticationStrategy implements SessionAuthentic
             return;
         }
 
-        if ($sessionCount == $maxSessions) {
+        if ($sessionCount === $maxSessions) {
             foreach ($sessions as $sessionInfo) {
                 /* @var $sessionInfo Registry\SessionInformation */
-                if ($sessionInfo->getSessionId() == $request->getSession()->getId()) {
+                if ($sessionInfo->getSessionId() === $request->getSession()->getId()) {
                     return;
                 }
             }
@@ -117,7 +117,8 @@ class ConcurrentSessionControlAuthenticationStrategy implements SessionAuthentic
     /**
      * Method intended for use by subclasses to override the maximum number of sessions that are permitted for a particular authentication.
      *
-     * @param  string $username
+     * @param string $username
+     *
      * @return int
      */
     protected function getMaximumSessionsForThisUser($username)
