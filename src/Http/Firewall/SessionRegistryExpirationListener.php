@@ -12,8 +12,8 @@
 namespace Ajgl\Security\Http\Firewall;
 
 use Ajgl\Security\Http\Session\Registry\SessionRegistry;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 
